@@ -1,0 +1,1260 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "R7_InternalLab_Questions_FMNIST_Simple_CNN_CIFAR_DATA_Augment.ipynb",
+      "version": "0.3.2",
+      "provenance": [],
+      "collapsed_sections": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "accelerator": "GPU"
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "MyfMmMnPJjvn",
+        "colab_type": "text"
+      },
+      "source": [
+        "## Train a simple convnet on the Fashion MNIST dataset"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "zjcGOJhcJjvp",
+        "colab_type": "text"
+      },
+      "source": [
+        "In this, we will see how to deal with image data and train a convnet for image classification task."
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "jR0Pl2XjJjvq",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Load the  `fashion_mnist`  dataset\n",
+        "\n",
+        "** Use keras.datasets to load the dataset **"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Qr75v_UYJjvs",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "from keras.datasets import fashion_mnist\n",
+        "(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "gxMDmMyU-1X8",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "import tensorflow as tf\n"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "hTI42-0qJjvw",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Find no.of samples are there in training and test datasets"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "g2sf67VoJjvx",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "c05b9e3a-7896-4b67-9de2-2672a4305eec"
+      },
+      "source": [
+        "x_train.shape"
+      ],
+      "execution_count": 6,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(60000, 28, 28)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 6
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "qt_K6kTi-Yqo",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "# Training Data set is 60000 "
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "zewyDcBlJjv1",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "d9ce2e22-3a84-49fb-ef2f-0beea2d92b11"
+      },
+      "source": [
+        "y_train.shape"
+      ],
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(60000,)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 8
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "9u2zKCmW-c1I",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "# Test Data set is 60000 "
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "ELH8Z59N3t_i",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "a47abfd2-3e65-46c2-ed96-511eeac89552"
+      },
+      "source": [
+        "x_test.shape"
+      ],
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(10000, 28, 28)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 10
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "lOcQAeQc3wOl",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "d686b0c7-6b4d-4ebd-becb-42dd066420a2"
+      },
+      "source": [
+        "y_test.shape"
+      ],
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(10000,)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 11
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "WytT2eRnJjv4",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Find dimensions of an image in the dataset"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "_NSAm-_z-hm-",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "# Dimension is 28 x 28"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "5jtdZ7RqJjv8",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Convert train and test labels to one hot vectors\n",
+        "\n",
+        "** check `keras.utils.to_categorical()` **"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "sAD3q5I6Jjv9",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "y_test = tf.keras.utils.to_categorical(y_test, num_classes=10)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "mgHSCXy3JjwA",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "y_train = tf.keras.utils.to_categorical(y_train, num_classes=10)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "xO5BRBzBJjwD",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Normalize both the train and test image data from 0-255 to 0-1"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "3fUQpMHxJjwE",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "x_trainN = x_train.astype('float32')\n",
+        "x_testN = x_test.astype('float32')"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "Okwo_SB5JjwI",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "x_trainN /= 255\n",
+        "x_testN /= 255"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "da5-DwgrJjwM",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Reshape the data from 28x28 to 28x28x1 to match input dimensions in Conv2D layer in keras"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "LPGVQ-JJJjwN",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "x_trainR = x_trainN.reshape(x_trainN.shape[0], 28, 28, 1)\n",
+        "x_testR = x_testN.reshape(x_testN.shape[0], 28, 28, 1)\n",
+        "input_shape = (28, 28, 1)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "OFRRTJq8JjwQ",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Import the necessary layers from keras to build the model"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "dWTZYnKSJjwR",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "from keras.models import Sequential\n",
+        "from keras.layers import Dense\n",
+        "from keras import regularizers\n",
+        "from keras import optimizers\n",
+        "from keras.models import Sequential\n",
+        "from keras.layers import Dense, Conv2D, Dropout, Flatten, MaxPooling2D\n",
+        "\n",
+        "import keras\n",
+        "import keras.utils\n",
+        "from keras import utils as np_utils"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "C18AoS7eJjwU",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Build a model \n",
+        "\n",
+        "** with 2 Conv layers having `32 3x3 filters` in both convolutions with `relu activations` and `flatten` before passing the feature map into 2 fully connected layers (or Dense Layers) having 128 and 10 neurons with `relu` and `softmax` activations respectively. Now, using `categorical_crossentropy` loss with `adam` optimizer train the model with early stopping `patience=5` and no.of `epochs=10`. **"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "DORCLgSwJjwV",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 106
+        },
+        "outputId": "9cca620f-20f4-4d05-d0e2-92da6af88253"
+      },
+      "source": [
+        "model = tf.keras.models.Sequential()\n",
+        "model.add(tf.keras.layers.Conv2D(32, kernel_size=(3,3), activation='relu'))\n",
+        "model.add(tf.keras.layers.Conv2D(32, kernel_size=(3,3), activation='relu'))\n",
+        "model.add(tf.keras.layers.Flatten())\n",
+        "model.add(tf.keras.layers.Dense(128, activation='relu'))\n",
+        "model.add(tf.keras.layers.Dense(10, activation='softmax'))\n",
+        "model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])\n",
+        "\n",
+        "\n",
+        "#Output layer\n",
+        "#model.add(tf.keras.layers.Dense(len(class_names), activation='softmax'))"
+      ],
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "WARNING: Logging before flag parsing goes to stderr.\n",
+            "W0818 10:50:16.472705 140664375805824 deprecation.py:506] From /usr/local/lib/python3.6/dist-packages/tensorflow/python/ops/init_ops.py:1251: calling VarianceScaling.__init__ (from tensorflow.python.ops.init_ops) with dtype is deprecated and will be removed in a future version.\n",
+            "Instructions for updating:\n",
+            "Call initializer instance with the dtype argument instead of passing it to the constructor\n"
+          ],
+          "name": "stderr"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "ifIE3n0_GH-G",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 697
+        },
+        "outputId": "7a8044ef-55c1-4eaf-c846-d65f21c96119"
+      },
+      "source": [
+        "# Creating a Sequential Model and adding the layers\n",
+        "model = Sequential()\n",
+        "model.add(Conv2D(32, kernel_size=(3,3), input_shape=input_shape, activation = 'relu'))\n",
+        "model.add(Conv2D(32, kernel_size=(3,3), input_shape=input_shape, activation = 'relu'))\n",
+        "model.add(Flatten()) # Flattening the 2D arrays for fully connected layers\n",
+        "model.add(Dense(128, activation=\"relu\"))\n",
+        "model.add(Dense(10, activation=\"softmax\"))\n",
+        "\n",
+        "model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])\n",
+        "\n",
+        "callbacks = [\n",
+        "    keras.callbacks.EarlyStopping(\n",
+        "        # Stop training when `val_loss` is no longer improving\n",
+        "        monitor='val_loss',\n",
+        "        # \"no longer improving\" being defined as \"no better than 1e-2 less\"\n",
+        "        min_delta=1e-2,\n",
+        "        # \"no longer improving\" being further defined as \"for at least 2 epochs\"\n",
+        "        patience=5,\n",
+        "        verbose=1)\n",
+        "]\n",
+        "\n",
+        "model.fit(x_trainR, y_train,\n",
+        "          epochs=10,\n",
+        "          batch_size=64,\n",
+        "          callbacks=callbacks\n",
+        "          )"
+      ],
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "W0818 10:50:16.490870 140664375805824 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:74: The name tf.get_default_graph is deprecated. Please use tf.compat.v1.get_default_graph instead.\n",
+            "\n",
+            "W0818 10:50:16.492868 140664375805824 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:517: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.\n",
+            "\n",
+            "W0818 10:50:16.495839 140664375805824 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:4138: The name tf.random_uniform is deprecated. Please use tf.random.uniform instead.\n",
+            "\n",
+            "W0818 10:50:16.551174 140664375805824 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/optimizers.py:790: The name tf.train.Optimizer is deprecated. Please use tf.compat.v1.train.Optimizer instead.\n",
+            "\n",
+            "W0818 10:50:16.571707 140664375805824 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:3295: The name tf.log is deprecated. Please use tf.math.log instead.\n",
+            "\n",
+            "W0818 10:50:16.654812 140664375805824 deprecation.py:323] From /usr/local/lib/python3.6/dist-packages/tensorflow/python/ops/math_grad.py:1250: add_dispatch_support.<locals>.wrapper (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.\n",
+            "Instructions for updating:\n",
+            "Use tf.where in 2.0, which has the same broadcast rule as np.where\n",
+            "W0818 10:50:16.709392 140664375805824 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:986: The name tf.assign_add is deprecated. Please use tf.compat.v1.assign_add instead.\n",
+            "\n"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "Epoch 1/10\n",
+            "60000/60000 [==============================] - 9s 150us/step - loss: 0.3940 - acc: 0.8584\n",
+            "Epoch 2/10\n",
+            " 1664/60000 [..............................] - ETA: 5s - loss: 0.2365 - acc: 0.9075"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "/usr/local/lib/python3.6/dist-packages/keras/callbacks.py:569: RuntimeWarning: Early stopping conditioned on metric `val_loss` which is not available. Available metrics are: loss,acc\n",
+            "  (self.monitor, ','.join(list(logs.keys()))), RuntimeWarning\n"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "60000/60000 [==============================] - 6s 99us/step - loss: 0.2447 - acc: 0.9106\n",
+            "Epoch 3/10\n",
+            "60000/60000 [==============================] - 6s 100us/step - loss: 0.1841 - acc: 0.9321\n",
+            "Epoch 4/10\n",
+            "60000/60000 [==============================] - 6s 99us/step - loss: 0.1381 - acc: 0.9499\n",
+            "Epoch 5/10\n",
+            "60000/60000 [==============================] - 6s 99us/step - loss: 0.1015 - acc: 0.9626\n",
+            "Epoch 6/10\n",
+            "60000/60000 [==============================] - 6s 99us/step - loss: 0.0716 - acc: 0.9728\n",
+            "Epoch 7/10\n",
+            "60000/60000 [==============================] - 6s 99us/step - loss: 0.0500 - acc: 0.9817\n",
+            "Epoch 8/10\n",
+            "60000/60000 [==============================] - 6s 98us/step - loss: 0.0378 - acc: 0.9869\n",
+            "Epoch 9/10\n",
+            "60000/60000 [==============================] - 6s 100us/step - loss: 0.0269 - acc: 0.9903\n",
+            "Epoch 10/10\n",
+            "60000/60000 [==============================] - 6s 100us/step - loss: 0.0221 - acc: 0.9923\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<keras.callbacks.History at 0x7feeaf0bad68>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 20
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "ju69vKdIJjwX",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Now, to the above model add `max` pooling layer of `filter size 2x2` and `dropout` layer with `p=0.25` after the 2 conv layers and run the model"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "L2hAP94vJjwY",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 523
+        },
+        "outputId": "b5a3817a-4e5b-4094-8e31-0ef13ccf2ab7"
+      },
+      "source": [
+        "# Creating a Sequential Model and adding the layers\n",
+        "model1 = Sequential()\n",
+        "model1.add(Conv2D(32, kernel_size=(3,3), input_shape=input_shape, activation = 'relu'))\n",
+        "model1.add(Conv2D(32, kernel_size=(3,3), input_shape=input_shape, activation = 'relu'))\n",
+        "model1.add(keras.layers.MaxPool2D(pool_size=(2,2)))\n",
+        "model1.add(Dropout(0.25))\n",
+        "model1.add(Flatten()) # Flattening the 2D arrays for fully connected layers\n",
+        "model1.add(Dense(128, activation=\"relu\"))\n",
+        "model1.add(Dense(10, activation=\"softmax\"))\n",
+        "\n",
+        "model1.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])\n",
+        "\n",
+        "callbacks1 = [\n",
+        "    keras.callbacks.EarlyStopping(\n",
+        "        # Stop training when `val_loss` is no longer improving\n",
+        "        monitor='val_loss',\n",
+        "        # \"no longer improving\" being defined as \"no better than 1e-2 less\"\n",
+        "        min_delta=1e-2,\n",
+        "        # \"no longer improving\" being further defined as \"for at least 2 epochs\"\n",
+        "        patience=5,\n",
+        "        verbose=1)\n",
+        "]\n",
+        "\n",
+        "model1.fit(x_trainR, y_train,\n",
+        "          epochs=10,\n",
+        "          batch_size=64,\n",
+        "          callbacks=callbacks1\n",
+        "          )"
+      ],
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "W0818 10:51:19.730522 140664375805824 deprecation_wrapper.py:119] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:3976: The name tf.nn.max_pool is deprecated. Please use tf.nn.max_pool2d instead.\n",
+            "\n",
+            "W0818 10:51:19.741086 140664375805824 deprecation.py:506] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:3445: calling dropout (from tensorflow.python.ops.nn_ops) with keep_prob is deprecated and will be removed in a future version.\n",
+            "Instructions for updating:\n",
+            "Please use `rate` instead of `keep_prob`. Rate should be set to `rate = 1 - keep_prob`.\n"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "Epoch 1/10\n",
+            "60000/60000 [==============================] - 5s 86us/step - loss: 0.4322 - acc: 0.8450\n",
+            "Epoch 2/10\n",
+            " 2048/60000 [>.............................] - ETA: 4s - loss: 0.2861 - acc: 0.8901"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "/usr/local/lib/python3.6/dist-packages/keras/callbacks.py:569: RuntimeWarning: Early stopping conditioned on metric `val_loss` which is not available. Available metrics are: loss,acc\n",
+            "  (self.monitor, ','.join(list(logs.keys()))), RuntimeWarning\n"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "60000/60000 [==============================] - 5s 80us/step - loss: 0.2822 - acc: 0.8969\n",
+            "Epoch 3/10\n",
+            "60000/60000 [==============================] - 5s 80us/step - loss: 0.2327 - acc: 0.9146\n",
+            "Epoch 4/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.2003 - acc: 0.9261\n",
+            "Epoch 5/10\n",
+            "60000/60000 [==============================] - 5s 80us/step - loss: 0.1721 - acc: 0.9356\n",
+            "Epoch 6/10\n",
+            "60000/60000 [==============================] - 5s 80us/step - loss: 0.1483 - acc: 0.9451\n",
+            "Epoch 7/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.1273 - acc: 0.9529\n",
+            "Epoch 8/10\n",
+            "60000/60000 [==============================] - 5s 80us/step - loss: 0.1143 - acc: 0.9570\n",
+            "Epoch 9/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.0994 - acc: 0.9636\n",
+            "Epoch 10/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.0848 - acc: 0.9684\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<keras.callbacks.History at 0x7feea04cec18>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 21
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "lGTA3bfEJjwa",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Now, to the above model, lets add Data Augmentation "
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "F6gX8n5SJjwb",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Import the ImageDataGenrator from keras and fit the training images"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "ZZMMq9oxKfEz",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "transform_fn = tf.keras.preprocessing.image.ImageDataGenerator(horizontal_flip=True)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "klJ2sPQXKjHR",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "transformed_array = transform_fn.random_transform(x_trainR)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "-4LhdA66LS6-",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "# Creating a Sequential Model and adding the layers\n",
+        "model1 = Sequential()\n",
+        "model1.add(Conv2D(32, kernel_size=(3,3), input_shape=input_shape, activation = 'relu'))\n",
+        "model1.add(Conv2D(32, kernel_size=(3,3), input_shape=input_shape, activation = 'relu'))\n",
+        "model1.add(keras.layers.MaxPool2D(pool_size=(2,2)))\n",
+        "model1.add(Dropout(0.25))\n",
+        "model1.add(Flatten()) # Flattening the 2D arrays for fully connected layers\n",
+        "model1.add(Dense(128, activation=\"relu\"))\n",
+        "model1.add(Dense(10, activation=\"softmax\"))\n",
+        "\n",
+        "model1.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])\n",
+        "\n",
+        "callbacks1 = [\n",
+        "    keras.callbacks.EarlyStopping(\n",
+        "        # Stop training when `val_loss` is no longer improving\n",
+        "        monitor='val_loss',\n",
+        "        # \"no longer improving\" being defined as \"no better than 1e-2 less\"\n",
+        "        min_delta=1e-2,\n",
+        "        # \"no longer improving\" being further defined as \"for at least 2 epochs\"\n",
+        "        patience=5,\n",
+        "        verbose=1)\n",
+        "]"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "pl-8dOo7Jjwf",
+        "colab_type": "text"
+      },
+      "source": [
+        "#### Showing 5 versions of the first image in training dataset using image datagenerator.flow()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "scrolled": true,
+        "id": "DpI1_McYJjwg",
+        "colab_type": "code",
+        "outputId": "16a38520-162b-4895-b7d2-6eff078408a4",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 109
+        }
+      },
+      "source": [
+        "from matplotlib import pyplot as plt\n",
+        "gen = transform_fn.flow(transformed_array[0:1], batch_size=1)\n",
+        "for i in range(1, 6):\n",
+        "    plt.subplot(1,5,i)\n",
+        "    plt.axis(\"off\")\n",
+        "    plt.imshow(gen.next().squeeze(), cmap='gray')\n",
+        "    plt.plot()\n",
+        "plt.show()"
+      ],
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "image/png": "iVBORw0KGgoAAAANSUhEUgAAAXIAAABcCAYAAABz9T77AAAABHNCSVQICAgIfAhkiAAAAAlwSFlz\nAAALEgAACxIB0t1+/AAAADl0RVh0U29mdHdhcmUAbWF0cGxvdGxpYiB2ZXJzaW9uIDMuMC4zLCBo\ndHRwOi8vbWF0cGxvdGxpYi5vcmcvnQurowAADPZJREFUeJztnUmIXcUXh78k7TyPUeM8oULEGeME\nCcaYhSAqCi5ExI24VcGFblwI6lYEUdGtOIFgjAEDokacSUTFWTTGOM9jYv8X7/913VevW9Nt293V\n+X2bzuvcW7fqvKTOr849p2rO8PAwIYQQ2mXudHcghBDCvyMTeQghNE4m8hBCaJxM5CGE0DiZyEMI\noXEykYcQQuNkIg8hhMbJRB5CCI2TiTyEEBpnaCofNmfOnK2ijHR4eHjOll4bmwwSm4xO7DJIbNIj\nijyEEBonE3kIITROJvIQQmicTOQhhNA4mchDCKFxpjRrZSqYM6f3crfeZ32XXXYB4KyzzgJgxYoV\no943b948ADZt2rTFz5KZurd7qzYZb1tDQ+Wf8+bNm0e9Z/ny5QA8++yzAPz444+jPnOmfpcQu4zG\n1m6TKPIQQmicOVPpTaYi51P1qJc98sgjAbj66qsB+PXXXwFYvXo1AL/99hsAL7744pht6nnnzp3b\n97lWqB3lOqPyYFuzydDQ0HC3v53fA0UB/fXXX32fR+O0004DYPvttwdg8eLFAOywww4A3HPPPQC8\n9957ff2tn/1fMN488thlkNikRxR5CCE0zqyLkddecsmSJQCce+65AHz66acAbLfddgDsuOOOACxd\nuhQoXnfjxo0jberFa8+78847A8Xb//LLL5M5lEmjNZvYpv1Q9f/0009/e9/8+fNH/uxqY5999unr\nx3HHHQfAgQceCMAHH3wATI/KGi+xyyCxSY8o8hBCaJxZp8j/+OOPvs+nnnoqAIceeihQvKiee+XK\nlQCceOKJANx2220AvPzyyyNtrFu3DoC33noLKLE0237++ecBWLNmzSSOZPJozSa77bYbAIsWLQLg\njDPOAOCll14CSuz+2GOPBWDhwoUAnHLKKSNt/PnnnwC89tprACxbtgyAgw46qO+n/b377ruBQVvN\nJGKXQWKTHlHkIYTQOLMma6XO6TS+q5rcfffdgeJ9jeGKHtz412jedv/99+9rw3suueQSAO68804A\nnn766RmRtdKqTZYsWTIMcO211wLw0EMPAUURbbPNNgBs2LCh775tt9125M9m5niPuOqwje+++w6A\nG264AYBVq1YBU5MjPN6sldhlkNikRxR5CCE0TibyEEJonGZDK3VJrjieF154ASgv9Or7LFypwwUW\nw3TDDK+++ipQQgzee/755wNw+OGHA7BgwQL7MC2hldlmk/Xr1wMl7evJJ58ESrGHS+KTTjoJKEth\nKEUd4lK6LhSRjz76CIDTTz/dPozat8n8/zLRgyVil0Js0iOKPIQQGqfZ9MN/8nbffvstUF7GWYZu\n0Yve1gIWVafluF31efbZZwMltUlvvu+++wLF+083s80mriBU+RZm2A/TJv3cVVn+nWrLsVjs8fvv\nv/eNTdvITNgIaSxil0G2dptEkYcQQuM0q8j/ibpk15962e+//x6Ar7/+GihxY71rN+7lvbZpSa7e\n3YKBmU5rNrEN2/QZKqiff/657++7ysi+Gs/ca6+9gFJAYkpZPY4WiF0G2dptEkUeQgiN06wir7dR\n1QMb3z3ggAOAEt/yp/FgMzNUoxbHqEa7Xte32G4sr6deu3Zt3zO7Zb/TwWyxiffYL9tUdbly8GCM\nut9QVJW/81rVlWPXVtrGfrvpUh1bnc54aOwySGzSI4o8hBAap1lFrrert5K87LLLANhvv/0A+PLL\nL4HBzIuddtoJKJ5bT61nt+QcSjaHbejBLT8/4YQT+q6bLmaLTbznzTffBOD1118H4Oabb+7rl/22\nX/aze41jUV2J/VZluYWptrr33nuBmbVVaewySGzSI4o8hBAap1lFrieuqxDfeOMNoMS19K61tzTf\n2ZxR48Be3632UqmaP+pBDJdffjkAt99+O1ByWaeL2WIT77Ea7/rrr+97huy6665AeTfQXTE4BitM\n7bsx/Xrs2kZbibbUtltyAPV/RewySGzSI4o8hBAaZ1oVud6xPtig9pr19qowtrd74okngJI3avWi\nWRbGkY0T11VdXU8tdT+85/jjjwfKm/HJIDYp2IZtvvvuu0BRRnW/ujax72Yi1Oqq3ldGG2grY/4y\nlm27FYKuXOoDf+3vZGUxxC6DbO02iSIPIYTGmRZFXsecJhJLOueccwC4+OKLATjzzDOB4lWN79Y7\nmflMr7MvvsXWO3c9Yn2AsG2aP3rRRRcB8Pjjj497HBKbDGIbtukzXFHYB8fRjeGrnoxn1of01mpL\n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\nrkJggg==\n",
+            "text/plain": [
+              "<Figure size 432x288 with 5 Axes>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "dmPl5yE8Jjwm",
+        "colab_type": "text"
+      },
+      "source": [
+        "### Run the above model using fit_generator()"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "44ZnDdJYJjwn",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 436
+        },
+        "outputId": "d0f77fec-bcd1-48cc-d5ca-1d2661a302bd"
+      },
+      "source": [
+        "model1.fit(transformed_array, y_train,\n",
+        "          epochs=10,\n",
+        "          batch_size=64,\n",
+        "          callbacks=callbacks1\n",
+        "          )\n"
+      ],
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "Epoch 1/10\n",
+            "60000/60000 [==============================] - 5s 85us/step - loss: 0.4218 - acc: 0.8504\n",
+            "Epoch 2/10\n",
+            " 2112/60000 [>.............................] - ETA: 4s - loss: 0.2927 - acc: 0.8892"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "/usr/local/lib/python3.6/dist-packages/keras/callbacks.py:569: RuntimeWarning: Early stopping conditioned on metric `val_loss` which is not available. Available metrics are: loss,acc\n",
+            "  (self.monitor, ','.join(list(logs.keys()))), RuntimeWarning\n"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "stream",
+          "text": [
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.2758 - acc: 0.8984\n",
+            "Epoch 3/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.2251 - acc: 0.9178\n",
+            "Epoch 4/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.1931 - acc: 0.9295\n",
+            "Epoch 5/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.1670 - acc: 0.9378\n",
+            "Epoch 6/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.1459 - acc: 0.9454\n",
+            "Epoch 7/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.1245 - acc: 0.9530\n",
+            "Epoch 8/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.1070 - acc: 0.9600\n",
+            "Epoch 9/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.0937 - acc: 0.9648\n",
+            "Epoch 10/10\n",
+            "60000/60000 [==============================] - 5s 79us/step - loss: 0.0792 - acc: 0.9697\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "<keras.callbacks.History at 0x7feeaeda0208>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 26
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "MwQQW5iOJjwq",
+        "colab_type": "text"
+      },
+      "source": [
+        "###  Report the final train and validation accuracy"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "c1SrtBEPJjwq",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 52
+        },
+        "outputId": "50472074-7109-4788-8fa8-88380fe464c9"
+      },
+      "source": [
+        "model.evaluate(x_testR,y_test)"
+      ],
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "10000/10000 [==============================] - 1s 59us/step\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[0.44589818478608506, 0.9063]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 27
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "ZBwVWNQC2qZD",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 52
+        },
+        "outputId": "abd90430-a442-4e94-ea5a-e8e9d1aab05e"
+      },
+      "source": [
+        "model.evaluate(x_trainR, y_train)"
+      ],
+      "execution_count": 28,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "60000/60000 [==============================] - 3s 50us/step\n"
+          ],
+          "name": "stdout"
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[0.02371889320870202, 0.9916833333333334]"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 28
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "8KXqmUDW2rM1",
+        "colab_type": "text"
+      },
+      "source": [
+        "## **DATA AUGMENTATION ON CIFAR10 DATASET**"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "8mja6OgQ3L18",
+        "colab_type": "text"
+      },
+      "source": [
+        "One of the best ways to improve the performance of a Deep Learning model is to add more data to the training set. Aside from gathering more instances from the wild that are representative of the distinction task, we want to develop a set of methods that enhance the data we already have. There are many ways to augment existing datasets and produce more robust models. In the image domain, these are done to utilize the full power of the convolutional neural network, which is able to capture translational invariance. This translational invariance is what makes image recognition such a difficult task in the first place. You want the dataset to be representative of the many different positions, angles, lightings, and miscellaneous distortions that are of interest to the vision task."
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "6HzVTPUM3WZJ",
+        "colab_type": "text"
+      },
+      "source": [
+        "### **Import neessary libraries for data augmentation**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "PPM558TX4KMb",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "from keras.datasets import cifar10\n"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "W6hicLwP4SqY",
+        "colab_type": "text"
+      },
+      "source": [
+        "### **Load CIFAR10 dataset**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "NQ1WzrXd4WNk",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "(x_trainC, y_trainC), (x_testC, y_testC) = cifar10.load_data()"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "R9Pht1ggHuiT",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 34
+        },
+        "outputId": "722768c6-3d60-4216-939b-0b7e92a4c9b8"
+      },
+      "source": [
+        "x_trainC.shape"
+      ],
+      "execution_count": 31,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "(50000, 32, 32, 3)"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          },
+          "execution_count": 31
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "3n28ccU6Hp6s",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "JN3vYYhK4W0u",
+        "colab_type": "text"
+      },
+      "source": [
+        "### **Create a data_gen funtion to genererator with image rotation,shifting image horizontally and vertically with random flip horizontally.**\n",
+        "\n",
+        "1.   List item\n",
+        "2.   List item\n",
+        "\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "JJbekTKi4cmM",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "data_gen1 = keras.preprocessing.image.ImageDataGenerator(rotation_range=10, \n",
+        "                               width_shift_range=0.08,height_shift_range=0.08,\n",
+        "                               horizontal_flip=True\n",
+        "                               )\n",
+        "                           "
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "De1iiqUvVSXh",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "data_gen1= tf.keras.preprocessing.image.ImageDataGenerator(\n",
+        "    featurewise_center=True,\n",
+        "    featurewise_std_normalization=True,\n",
+        "    rotation_range=20,\n",
+        "    width_shift_range=0.2,\n",
+        "    height_shift_range=0.2,\n",
+        "    horizontal_flip=True)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "e-SLtUhC4dK2",
+        "colab_type": "text"
+      },
+      "source": [
+        "### **Prepare/fit the generator.**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "IknQw4J8S-GP",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "data_gen1.fit(x_trainC)"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "CSw8Bv2_4hb0",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "# Creating a Sequential Model and adding the layers\n",
+        "model2 = Sequential()\n",
+        "model2.add(Conv2D(32, kernel_size=(3,3), input_shape=input_shape, activation = 'relu'))\n",
+        "model2.add(Conv2D(32, kernel_size=(3,3), input_shape=input_shape, activation = 'relu'))\n",
+        "model2.add(keras.layers.MaxPool2D(pool_size=(2,2)))\n",
+        "model2.add(Dropout(0.25))\n",
+        "model2.add(Flatten()) # Flattening the 2D arrays for fully connected layers\n",
+        "model2.add(Dense(128, activation=\"relu\"))\n",
+        "model2.add(Dense(10, activation=\"softmax\"))\n",
+        "\n",
+        "model2.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])\n",
+        "\n",
+        "callbacks1 = [\n",
+        "    keras.callbacks.EarlyStopping(\n",
+        "        # Stop training when `val_loss` is no longer improving\n",
+        "        monitor='val_loss',\n",
+        "        # \"no longer improving\" being defined as \"no better than 1e-2 less\"\n",
+        "        min_delta=1e-2,\n",
+        "        # \"no longer improving\" being further defined as \"for at least 2 epochs\"\n",
+        "        patience=5,\n",
+        "        verbose=1)\n",
+        "]"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "gYyF-P8O4jQ8",
+        "colab_type": "text"
+      },
+      "source": [
+        "### **Generate 5 images for 1 of the image of CIFAR10 train dataset.**"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "mXug4z234mwQ",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 216
+        },
+        "outputId": "687aa352-7f5c-49e2-8302-5ec6e108ecc7"
+      },
+      "source": [
+        "from matplotlib import pyplot as plt\n",
+        "gen = data_gen1.flow(x_trainC[0:1], batch_size=1)\n",
+        "for i in range(1, 6):\n",
+        "    plt.subplot(1,5,i)\n",
+        "    plt.axis(\"off\")\n",
+        "    plt.imshow(gen.next().squeeze())\n",
+        "    plt.plot()\n",
+        "plt.show()"
+      ],
+      "execution_count": 37,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "W0818 10:53:19.382650 140664375805824 image.py:648] Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "W0818 10:53:19.398231 140664375805824 image.py:648] Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "W0818 10:53:19.411444 140664375805824 image.py:648] Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "W0818 10:53:19.427176 140664375805824 image.py:648] Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n",
+            "W0818 10:53:19.440473 140664375805824 image.py:648] Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).\n"
+          ],
+          "name": "stderr"
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "image/png": "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\n",
+            "text/plain": [
+              "<Figure size 432x288 with 5 Axes>"
+            ]
+          },
+          "metadata": {
+            "tags": []
+          }
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "On38gl8RVrXY",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        ""
+      ],
+      "execution_count": 0,
+      "outputs": []
+    }
+  ]
+}
